@@ -52,28 +52,23 @@ var create = g(function* (req, res, next) {
     return
   }
 
-  let attrs = {
+  // Creates a new beverage
+  let beverage = (yield Beverage.create({
     name    : req.body.name,
     picture : req.body.picture,
     price   : req.body.price,
     max     : req.body.max
-  }
-
-  // Creates a new beverage
-  user = (yield User.create({
-    name       : fbUser.name,
-    email      : fbUser.email,
-    facebookId : fbUser.id,
-    picture    : fbUser.picture.data.url
   })).dataValues
 
-    res.spit(userToken)
-  }
+  res.spit(beverage)
+
 })
 
 /**
- * Returns the current user
+ * Returns the list of beverages
  */
-var me = g(function* (req, res, next) {
-  res.spit(req.user)
+var find = g(function* (req, res, next) {
+  let beverages = yield Beverage.findAll()
+
+  res.spit(beverages)
 })

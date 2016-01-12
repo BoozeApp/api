@@ -20,7 +20,7 @@ var Order = sequelize.define('order', {
   staffId      : { type : Sequelize.INTEGER },
   amount       : { type : Sequelize.DOUBLE },
   change       : { type : Sequelize.DOUBLE },
-  status       : { type : Sequelize.ENUM('placed', 'fulfilled', 'rejected') },
+  status       : { type : Sequelize.ENUM('draft', 'placed', 'in_transit', 'fulfilled', 'rejected') },
   statusReason : { type : Sequelize.STRING },
   address      : { type : Sequelize.STRING },
   latitude     : { type : Sequelize.DOUBLE },
@@ -47,11 +47,13 @@ var OrderBeverage = sequelize.define('orderBeverage', {
   amount     : { type : Sequelize.INTEGER }
 })
 
+/* Creates the relationship */
+Order.hasMany(OrderBeverage, { as : 'beverages' })
+OrderBeverage.belongsTo(Beverage)
+OrderBeverage.belongsTo(Order)
+
 /* Creates the alias */
 Order.Beverage = OrderBeverage
-
-/* Creates the relationship */
-Order.hasMany(OrderBeverage)
 
 /**
   * The attributes

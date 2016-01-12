@@ -13,10 +13,13 @@ var errors = {
   '106' : 'City id not found',
   '107' : 'Access denied (token might be expired)',
   '108' : 'Facebook token denied',
-  '109' : 'Itinerary not found',
-  '110' : 'City not found',
+  '109' : 'Order not found',
+  '110' : 'Beverage not found',
   '111' : 'A given parameter is too short',
   '112' : 'Missing required parameters',
+  '113' : 'Access denied (needs higher level)',
+  '114' : 'Beverage amount exceeded',
+  '115' : 'Beverage exists already in the order',
 
   /**
    * Helpers
@@ -30,10 +33,13 @@ var errors = {
   CITY_ID_NOT_FOUND : 106,
   ACCESS_DENIED : 107,
   FB_TOKEN_DENIED : 108,
-  ITINERARY_NOT_FOUND : 109,
-  CITY_NOT_FOUND : 110,
+  ORDER_NOT_FOUND : 109,
+  BEVERAGE_NOT_FOUND : 110,
   PARAM_TOO_SHORT : 111,
-  MISSING_PARAMS : 112
+  MISSING_PARAMS : 112,
+  NOT_ENOUGH_PERMISSION : 113,
+  BEVERAGE_MAX_EXCEEDED : 114,
+  BEVERAGE_ALREADY_EXISTS_IN_ORDER : 115
 }
 
 /**

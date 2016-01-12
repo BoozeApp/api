@@ -95,7 +95,7 @@ User.authenticator = g(function* (req, res, next) {
 User.staffUp = g(function* (req, res, next) {
 
   if (!req.user || req.user.level == 'client') {
-    res.err(res.errors.ACCESS_DENIED, 401)
+    res.err(res.errors.NOT_ENOUGH_PERMISSION, 403)
   } else {
     next()
   }
@@ -105,7 +105,7 @@ User.staffUp = g(function* (req, res, next) {
 User.isAdmin = g(function* (req, res, next) {
   
   if (!req.user || req.user.level != 'admin') {
-    res.err(res.errors.ACCESS_DENIED, 401)
+    res.err(res.errors.NOT_ENOUGH_PERMISSION, 403)
   } else {
     next()
   }

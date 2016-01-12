@@ -23,7 +23,7 @@ module.exports = {
             model : 'users',
             key   : 'id'
           },
-          allowNull : false
+          allowNull : true
         },
         address : {
           type      : Sequelize.STRING,
@@ -48,9 +48,9 @@ module.exports = {
           defaultValue : 0.0
         },
         status : {
-          type : Sequelize.ENUM('placed', 'fulfilled', 'rejected'),
+          type : Sequelize.ENUM('draft', 'placed', 'in_transit', 'fulfilled', 'rejected'),
           allowNull : false,
-          defaultValue : 'placed'
+          defaultValue : 'draft'
         },
         statusReason : {
           type : Sequelize.STRING
