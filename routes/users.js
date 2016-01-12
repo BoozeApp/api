@@ -90,11 +90,10 @@ var auth = g(function* (req, res, next) {
     // Creates a token for session
     var userToken = (yield User.Token.create({
       userId      : user.id,
-      accessToken : accessToken.digest('base64'),
-      expireAt    : moment().add(10, 'years').format()
-    }, {
-      include : [ User ]
+      accessToken : accessToken.digest('base64')
     })).dataValues
+
+    userToken.user = user
 
     res.spit(userToken)
   }

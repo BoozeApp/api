@@ -29,6 +29,12 @@ module.exports = {
           allowNull : false,
           defaultValue : 'client'
         },
+        latitude : {
+          type : Sequelize.DOUBLE
+        },
+        longitude : {
+          type : Sequelize.DOUBLE
+        },
         createdAt : {
           type : Sequelize.DATE
         },

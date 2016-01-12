@@ -1,7 +1,6 @@
 'use strict'
 
 var g = require('co-express')
-  , moment = require('moment')
   , Sequelize = require('sequelize')
   , sequelize = require('../config/database')().sequelize
 
@@ -24,7 +23,10 @@ var User = sequelize.define('user', {
   name       : { type : Sequelize.STRING },
   email      : { type : Sequelize.STRING },
   facebookId : { type : Sequelize.STRING },
-  picture    : { type : Sequelize.STRING }
+  picture    : { type : Sequelize.STRING },
+  level      : { type : Sequelize.ENUM('client', 'staff', 'admin') },
+  latitude   : { type : Sequelize.DOUBLE },
+  longitude  : { type : Sequelize.DOUBLE }
 })
 
 /**
@@ -32,8 +34,7 @@ var User = sequelize.define('user', {
  */
 var UserToken = sequelize.define('userToken', {
   userId      : { type : Sequelize.INTEGER },
-  accessToken : { type : Sequelize.STRING  },
-  expireAt    : { type : Sequelize.DATE    }
+  accessToken : { type : Sequelize.STRING  }
 })
 
 /**
@@ -70,7 +71,7 @@ User.authenticator = g(function* (req, res, next) {
 
   let accessToken = req.query.access_token || null
 
-  var userToken = yield User.Token.findOne({
+  var userToken = yield UserToken.findOne({
     attributes : User.Token.attr,
     include    : [ User ],
     where : {
@@ -78,14 +79,37 @@ User.authenticator = g(function* (req, res, next) {
     }
   })
 
-  if (userToken == null || moment().isAfter(userToken.expireAt)) {
+  if (userToken == null) {
     res.err(res.errors.ACCESS_DENIED, 401)
   } else {
-    req.user = userToken.user
+    req.user = userToken.dataValues.user
 
     next()
   }
   
+})
+
+/**
+ * Associates a level verification
+ */
+User.staffUp = g(function* (req, res, next) {
+
+  if (!req.user || req.user.level == 'client') {
+    res.err(res.errors.ACCESS_DENIED, 401)
+  } else {
+    next()
+  }
+
+})
+
+User.isAdmin = g(function* (req, res, next) {
+  
+  if (!req.user || req.user.level != 'admin') {
+    res.err(res.errors.ACCESS_DENIED, 401)
+  } else {
+    next()
+  }
+
 })
 
 /**

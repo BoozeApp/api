@@ -25,6 +25,18 @@ module.exports = {
           },
           allowNull : false
         },
+        address : {
+          type      : Sequelize.STRING,
+          allowNull : false
+        },
+        latitude : {
+          type      : Sequelize.DOUBLE,
+          allowNull : false
+        },
+        longitude : {
+          type      : Sequelize.DOUBLE,
+          allowNull : false
+        },
         amount : {
           type      : Sequelize.DOUBLE,
           allowNull : false,

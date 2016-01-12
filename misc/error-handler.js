@@ -15,6 +15,8 @@ var errors = {
   '108' : 'Facebook token denied',
   '109' : 'Itinerary not found',
   '110' : 'City not found',
+  '111' : 'A given parameter is too short',
+  '112' : 'Missing required parameters',
 
   /**
    * Helpers
@@ -29,7 +31,9 @@ var errors = {
   ACCESS_DENIED : 107,
   FB_TOKEN_DENIED : 108,
   ITINERARY_NOT_FOUND : 109,
-  CITY_NOT_FOUND : 110
+  CITY_NOT_FOUND : 110,
+  PARAM_TOO_SHORT : 111,
+  MISSING_PARAMS : 112
 }
 
 /**
