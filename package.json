@@ -1,0 +1,28 @@
+{
+  "name": "booze",
+  "description": "Booze App",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "sequelize db:migrate",
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "body-parser": "1.14.1",
+    "co": "^4.6.0",
+    "co-express": "1.2.1",
+    "co-request": "^1.0.0",
+    "dotenv": "1.2.0",
+    "express": "4.13.3",
+    "fb": "^0.7.3",
+    "moment": "^2.10.6",
+    "mysql": "2.9.0",
+    "querystring": "^0.2.0",
+    "request": "^2.65.0",
+    "sequelize": "3.13.0",
+    "sequelize-cli": "2.0.0"
+  },
+  "engines": {
+    "node": "4.2.1"
+  }
+}

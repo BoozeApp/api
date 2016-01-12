@@ -1,0 +1,19 @@
+{
+  "development": {
+    "username": "root",
+    "password": "",
+    "database": "booze",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "",
+    "password": "",
+    "database": "",
+    "host": "",
+    "dialect": ""
+  },
+  "production": {
+    "use_env_variable": "CLEARDB_DATABASE_URL"
+  }
+}
