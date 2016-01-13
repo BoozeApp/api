@@ -93,8 +93,9 @@ var auth = g(function* (req, res, next) {
       accessToken : accessToken.digest('base64')
     })).dataValues
 
-    userToken.user = user
+    user = user.dataValues
+    user.accessToken = userToken.accessToken
 
-    res.spit(userToken)
+    res.spit(user)
   }
 })

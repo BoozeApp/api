@@ -15,12 +15,12 @@ exports = module.exports = (req, res, next) => {
     status = status || 200
     format = format || 'json'
 
-    var spittle = data;
+    var spittle = data
 
     if (format == 'json') {
-      spittle = {
+      /*spittle = {
         'data' : isArray(data) ? data : [data]
-      }
+      }*/
     } else if (format == 'xml') {
 
     }
