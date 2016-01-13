@@ -20,6 +20,10 @@ var errors = {
   '113' : 'Access denied (needs higher level)',
   '114' : 'Beverage amount exceeded',
   '115' : 'Beverage exists already in the order',
+  '116' : 'Order is already off draft status',
+  '117' : 'Order is already off placed status',
+  '118' : 'Order is already off in_transit status',
+  '119' : 'Order is already off fulfilled status',
 
   /**
    * Helpers
@@ -39,7 +43,11 @@ var errors = {
   MISSING_PARAMS : 112,
   NOT_ENOUGH_PERMISSION : 113,
   BEVERAGE_MAX_EXCEEDED : 114,
-  BEVERAGE_ALREADY_EXISTS_IN_ORDER : 115
+  BEVERAGE_ALREADY_EXISTS_IN_ORDER : 115,
+  ORDER_ALREADY_OFF_DRAFT : 116,
+  ORDER_ALREADY_OFF_PLACED : 117,
+  ORDER_ALREADY_OFF_IN_TRANSIT : 118,
+  ORDER_ALREADY_OFF_FULFILLED : 119
 }
 
 /**

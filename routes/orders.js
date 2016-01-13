@@ -29,23 +29,35 @@ exports = module.exports = (router) => {
   router.route(root)
     .get(User.authenticator, find)
 
-  router.route(root + '/:oid/beverages/:bid')
-    .post(User.authenticator, addBeverage)
+  router.route(root + '/placed')
+    .get(User.authenticator, User.staffUp, placed)
 
-  /*router.route(root + '/:id')
+  router.route(root + '/in_transit')
+    .get(User.authenticator, User.staffUp, inTransit)
+
+  router.route(root + '/fulfilled')
+    .get(User.authenticator, User.staffUp, fulfilled)
+
+  router.route(root + '/rejected')
+    .get(User.authenticator, User.staffUp, rejected)
+
+  router.route(root + '/:id')
     .get(User.authenticator, get)
 
   router.route(root + '/:id/place')
-    .post(User.authenticator, place)
+    .put(User.authenticator, place)
+
+  router.route(root + '/:oid/beverages/:bid')
+    .post(User.authenticator, addBeverage)
 
   router.route(root + '/:id/transit')
-    .post(User.authenticator, User.staffUp, transit)
+    .put(User.authenticator, User.staffUp, transit)
 
   router.route(root + '/:id/fulfill')
-    .post(User.authenticator, User.staffUp, fulfill)
+    .put(User.authenticator, User.staffUp, fulfill)
 
   router.route(root + '/:id/reject')
-    .post(User.authenticator, User.staffUp, reject)*/
+    .post(User.authenticator, User.staffUp, reject)
 }
 
 /**
@@ -90,10 +102,10 @@ var find = g(function* (req, res, next) {
       clientId : req.user.id
     },
     include : [{
-      model   : Order.Beverage,
-      as      : 'beverages',
+      model      : Order.Beverage,
+      as         : 'beverages',
       attributes : ['createdAt'],
-      include : [ Beverage ]
+      include    : [ Beverage ]
     }]
   })
 
@@ -120,6 +132,11 @@ var addBeverage = g(function* (req, res, next) {
 
   if (order == null) {
     res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+
+  if (order.status != 'draft') {
+    res.err(res.errors.ORDER_ALREADY_OFF_DRAFT, 409)
     return
   }
 
@@ -159,4 +176,261 @@ var addBeverage = g(function* (req, res, next) {
   })
 
   yield find(req, res, next)
+})
+
+/**
+ * Returns the order
+ */
+var get = g(function* (req, res, next) {
+  let order = yield Order.findOne({
+    attributes : Order.attr,
+    where : {
+      id : req.params.id,
+      clientId : req.user.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  if (order == null) {
+    res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+  
+  res.spit(order)
+})
+
+/**
+ * Places the order
+ */
+var place = g(function* (req, res, next) {
+  let order = yield Order.findOne({
+    attributes : Order.attr,
+    where : {
+      id : req.params.id,
+      clientId : req.user.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  if (order == null) {
+    res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+
+  if (order.status != 'draft') {
+    res.err(res.errors.ORDER_ALREADY_OFF_DRAFT, 409)
+    return
+  }
+
+  order.status = 'placed'
+  yield order.save()
+
+  res.spit(order)
+})
+
+/**
+ * Finds all placed orders
+ */
+var placed = g(function* (req, res, next) {
+  let orders = yield Order.findAll({
+    attributes : Order.attr,
+    where : {
+      status : 'placed'
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  res.spit(orders)
+})
+
+/**
+ * Finds all in transit orders
+ */
+var inTransit = g(function* (req, res, next) {
+  let orders = yield Order.findAll({
+    attributes : Order.attr,
+    where : {
+      status  : 'in_transit',
+      staffId : req.user.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  res.spit(orders)
+})
+
+/**
+ * Finds all fulfilled orders
+ */
+var fulfilled = g(function* (req, res, next) {
+  let orders = yield Order.findAll({
+    attributes : Order.attr,
+    where : {
+      status  : 'fulfilled',
+      staffId : req.user.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  res.spit(orders)
+})
+
+/**
+ * Finds all rejected orders
+ */
+var rejected = g(function* (req, res, next) {
+  let orders = yield Order.findAll({
+    attributes : Order.attr,
+    where : {
+      status  : 'rejected',
+      staffId : req.user.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  res.spit(orders)
+})
+
+/**
+ * Transit the order
+ */
+var transit = g(function* (req, res, next) {
+  let order = yield Order.findOne({
+    attributes : Order.attr,
+    where : {
+      id : req.params.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  if (order == null) {
+    res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+
+  if (order.status != 'placed') {
+    res.err(res.errors.ORDER_ALREADY_OFF_PLACED, 409)
+    return
+  }
+
+  order.status  = 'in_transit'
+  order.staffId = req.user.id
+  yield order.save()
+
+  res.spit(order)
+})
+
+/**
+ * Fulfill the order
+ */
+var fulfill = g(function* (req, res, next) {
+  let order = yield Order.findOne({
+    attributes : Order.attr,
+    where : {
+      id      : req.params.id,
+      staffId : req.user.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  if (order == null) {
+    res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+
+  if (order.status != 'in_transit') {
+    res.err(res.errors.ORDER_ALREADY_OFF_IN_TRANSIT, 409)
+    return
+  }
+
+  order.status  = 'fulfilled'
+  yield order.save()
+
+  res.spit(order)
+})
+
+/**
+ * Reject the order
+ * @body reason The reason message
+ */
+var reject = g(function* (req, res, next) {
+  if (!req.body.reason) {
+    res.err(res.errors.MISSING_PARAMS, 400)
+    return
+  }
+
+  if (req.body.reason.length < 4) {
+    res.err(res.errors.PARAM_TOO_SHORT, 400)
+    return
+  }
+
+  let order = yield Order.findOne({
+    attributes : Order.attr,
+    where : {
+      id : req.params.id
+    },
+    include : [{
+      model      : Order.Beverage,
+      as         : 'beverages',
+      attributes : ['createdAt'],
+      include    : [ Beverage ]
+    }]
+  })
+
+  if (order == null) {
+    res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+
+  if (order.status != 'placed') {
+    res.err(res.errors.ORDER_ALREADY_OFF_PLACED, 409)
+    return
+  }
+
+  order.status       = 'rejected'
+  order.staffId      = req.user.id
+  order.statusReason = req.body.reason
+  yield order.save()
+
+  res.spit(order)
 })
