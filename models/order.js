@@ -48,9 +48,7 @@ var OrderBeverage = sequelize.define('orderBeverage', {
 })
 
 /* Creates the relationship */
-Order.hasMany(OrderBeverage, { as : 'beverages' })
-OrderBeverage.belongsTo(Beverage)
-OrderBeverage.belongsTo(Order)
+Order.belongsToMany(Beverage, { through : 'orderBeverage' })
 
 /* Creates the alias */
 Order.Beverage = OrderBeverage

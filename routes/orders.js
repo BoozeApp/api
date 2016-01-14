@@ -97,15 +97,15 @@ var create = g(function* (req, res, next) {
  */
 var find = g(function* (req, res, next) {
   let orders = yield Order.findAll({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
       clientId : req.user.id
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'staff'
     }]
   })
 
@@ -183,16 +183,16 @@ var addBeverage = g(function* (req, res, next) {
  */
 var get = g(function* (req, res, next) {
   let order = yield Order.findOne({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
       id : req.params.id,
       clientId : req.user.id
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'staff'
     }]
   })
 
@@ -209,16 +209,16 @@ var get = g(function* (req, res, next) {
  */
 var place = g(function* (req, res, next) {
   let order = yield Order.findOne({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
       id : req.params.id,
       clientId : req.user.id
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 
@@ -243,15 +243,15 @@ var place = g(function* (req, res, next) {
  */
 var placed = g(function* (req, res, next) {
   let orders = yield Order.findAll({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
       status : 'placed'
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 
@@ -263,16 +263,15 @@ var placed = g(function* (req, res, next) {
  */
 var inTransit = g(function* (req, res, next) {
   let orders = yield Order.findAll({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      status  : 'in_transit',
-      staffId : req.user.id
+      status : 'in_transit'
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 
@@ -284,16 +283,15 @@ var inTransit = g(function* (req, res, next) {
  */
 var fulfilled = g(function* (req, res, next) {
   let orders = yield Order.findAll({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      status  : 'fulfilled',
-      staffId : req.user.id
+      status : 'fulfilled'
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 
@@ -305,16 +303,15 @@ var fulfilled = g(function* (req, res, next) {
  */
 var rejected = g(function* (req, res, next) {
   let orders = yield Order.findAll({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      status  : 'rejected',
-      staffId : req.user.id
+      status : 'rejected'
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 
@@ -326,15 +323,15 @@ var rejected = g(function* (req, res, next) {
  */
 var transit = g(function* (req, res, next) {
   let order = yield Order.findOne({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
       id : req.params.id
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 
@@ -360,16 +357,16 @@ var transit = g(function* (req, res, next) {
  */
 var fulfill = g(function* (req, res, next) {
   let order = yield Order.findOne({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
       id      : req.params.id,
       staffId : req.user.id
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 
@@ -405,15 +402,15 @@ var reject = g(function* (req, res, next) {
   }
 
   let order = yield Order.findOne({
-    attributes : Order.attr,
+    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
       id : req.params.id
     },
     include : [{
-      model      : Order.Beverage,
-      as         : 'beverages',
-      attributes : ['createdAt'],
-      include    : [ Beverage ]
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
     }]
   })
 

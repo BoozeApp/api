@@ -23,7 +23,7 @@ var Beverage = sequelize.define('beverage', {
  * The beverage attributes
  */
 Beverage.attr = {
-  /* all */
+  
 }
 
 /**
