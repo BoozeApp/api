@@ -41,34 +41,36 @@ exports = module.exports = (router) => {
   router.route(root + '/rejected')
     .get(User.authenticator, User.staffUp, rejected)
 
-  router.route(root + '/:id')
+  router.route(root + '/:oid')
     .get(User.authenticator, get)
 
-  router.route(root + '/:id/place')
+  router.route(root + '/:oid/place')
     .put(User.authenticator, place)
 
   router.route(root + '/:oid/beverages/:bid')
     .post(User.authenticator, addBeverage)
 
-  router.route(root + '/:id/transit')
+  router.route(root + '/:oid/transit')
     .put(User.authenticator, User.staffUp, transit)
 
-  router.route(root + '/:id/fulfill')
+  router.route(root + '/:oid/fulfill')
     .put(User.authenticator, User.staffUp, fulfill)
 
-  router.route(root + '/:id/reject')
+  router.route(root + '/:oid/reject')
     .post(User.authenticator, User.staffUp, reject)
 }
 
 /**
  * Creates an order
  * @post address   The address to deliver
+ * @post change    The change to deliver
  * @post latitude  The latitude to deliver
  * @post longitude The longitude to deliver
  */
 var create = g(function* (req, res, next) {
 
   if (!req.body.address  ||
+      !req.body.change   ||
       !req.body.latitude ||
       !req.body.longitude) {
     res.err(res.errors.MISSING_PARAMS, 400)
@@ -83,6 +85,7 @@ var create = g(function* (req, res, next) {
   // Creates a new order
   let order = (yield Order.create({
     clientId  : req.user.id,
+    change    : req.body.change,
     address   : req.body.address,
     latitude  : req.body.latitude,
     longitude : req.body.longitude
@@ -175,7 +178,7 @@ var addBeverage = g(function* (req, res, next) {
     amount     : req.body.amount || 1
   })
 
-  yield find(req, res, next)
+  yield get(req, res, next)
 })
 
 /**
@@ -185,7 +188,7 @@ var get = g(function* (req, res, next) {
   let order = yield Order.findOne({
     attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      id : req.params.id,
+      id : req.params.oid,
       clientId : req.user.id
     },
     include : [{
@@ -211,7 +214,7 @@ var place = g(function* (req, res, next) {
   let order = yield Order.findOne({
     attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      id : req.params.id,
+      id : req.params.oid,
       clientId : req.user.id
     },
     include : [{
@@ -232,6 +235,15 @@ var place = g(function* (req, res, next) {
     return
   }
 
+  var amount = 0
+
+  for (var i in order.beverages) {
+    var value = order.beverages[i].price
+    value *= order.beverages[i].orderBeverage.amount
+    amount += value
+  }
+
+  order.amount = amount
   order.status = 'placed'
   yield order.save()
 
@@ -325,7 +337,7 @@ var transit = g(function* (req, res, next) {
   let order = yield Order.findOne({
     attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      id : req.params.id
+      id : req.params.oid
     },
     include : [{
       model : Beverage
@@ -359,7 +371,7 @@ var fulfill = g(function* (req, res, next) {
   let order = yield Order.findOne({
     attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      id      : req.params.id,
+      id      : req.params.oid,
       staffId : req.user.id
     },
     include : [{
@@ -404,7 +416,7 @@ var reject = g(function* (req, res, next) {
   let order = yield Order.findOne({
     attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      id : req.params.id
+      id : req.params.oid
     },
     include : [{
       model : Beverage
