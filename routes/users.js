@@ -13,6 +13,7 @@ var g = require('co-express')
  * Loads the models
  */
 var User = require('../models/user')
+  , Device = require('../models/device')
 
 /**
  * Generates the user route
@@ -37,9 +38,18 @@ var me = g(function* (req, res, next) {
 
 /**
  * Authenticates an user from its FB token
- * @post fb_token The facebook token
+ * @post fb_token     The facebook token
+ * @post device_token The device token
+ * @post device_type  The device type
  */
 var auth = g(function* (req, res, next) {
+  if (!req.body.fb_token    ||
+      !req.body.device_type ||
+      !req.body.device_token) {
+    res.err(res.errors.MISSING_PARAMS, 400)
+    return
+  }
+
   let fbToken = req.body.fb_token
 
   // Gets the user from facebook
@@ -95,6 +105,16 @@ var auth = g(function* (req, res, next) {
 
     user = user.dataValues
     user.accessToken = userToken.accessToken
+
+    yield Device.destroy({
+      where : { token : req.body.device_token }
+    })
+
+    yield Device.create({
+      userId : user.id,
+      token  : req.body.device_token,
+      type   : req.body.device_type
+    })
 
     res.spit(user)
   }

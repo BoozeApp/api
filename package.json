@@ -20,7 +20,8 @@
     "querystring": "^0.2.0",
     "request": "^2.65.0",
     "sequelize": "3.13.0",
-    "sequelize-cli": "2.0.0"
+    "sequelize-cli": "2.0.0",
+    "node-gcm": "0.14.0"
   },
   "engines": {
     "node": "4.2.1"

@@ -5,13 +5,6 @@ var g = require('co-express')
   , sequelize = require('../config/database')().sequelize
 
 /**
- * @apiDefine authentication Access rights needed.
- * A query parameter <code>access_token</code> is required.
- *
- * @apiVersion 1.0.0
- */
-
-/**
  * The user model
  */
 var User = sequelize.define('user', {

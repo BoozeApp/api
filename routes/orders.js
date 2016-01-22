@@ -15,6 +15,7 @@ var g = require('co-express')
 var User = require('../models/user')
 var Beverage = require('../models/beverage')
 var Order = require('../models/order')
+var Device = require('../models/device')
 
 /**
  * Generates the order route
@@ -185,17 +186,33 @@ var addBeverage = g(function* (req, res, next) {
  * Returns the order
  */
 var get = g(function* (req, res, next) {
-  let order = yield Order.findOne({
-    attributes : { exclude : ['clientId', 'staffId'] },
-    where : {
+  
+  var where, userAs
+
+  if (req.user.level == 'client') {
+    where = {
       id : req.params.oid,
       clientId : req.user.id
-    },
+    }
+
+    userAs = 'staff'
+
+  } else {
+    where = {
+      id : req.params.oid
+    }
+
+    userAs = 'client'
+  }
+
+  let order = yield Order.findOne({
+    attributes : { exclude : ['clientId', 'staffId'] },
+    where   : where,
     include : [{
       model : Beverage
     }, {
       model : User,
-      as    : 'staff'
+      as    : userAs
     }]
   })
 
@@ -246,6 +263,8 @@ var place = g(function* (req, res, next) {
   order.amount = amount
   order.status = 'placed'
   yield order.save()
+
+  yield Device.push.placed(order)
 
   res.spit(order)
 })
@@ -360,6 +379,8 @@ var transit = g(function* (req, res, next) {
   order.status  = 'in_transit'
   order.staffId = req.user.id
   yield order.save()
+
+  yield Device.push.inTransit(order)
 
   res.spit(order)
 })
