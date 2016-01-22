@@ -45,6 +45,9 @@ exports = module.exports = (router) => {
   router.route(root + '/:oid')
     .get(User.authenticator, get)
 
+  router.route(root + '/:oid/message')
+    .post(User.authenticator, User.staffUp, message)
+
   router.route(root + '/:oid/place')
     .put(User.authenticator, place)
 
@@ -347,6 +350,45 @@ var rejected = g(function* (req, res, next) {
   })
 
   res.spit(orders)
+})
+
+/**
+ * Send a message
+ * @post message The message
+ */
+var message = g(function* (req, res, next) {
+  if (!req.body.message) {
+    res.err(res.errors.MISSING_PARAMS, 400)
+    return
+  }
+
+  let order = yield Order.findOne({
+    attributes : { exclude : ['clientId', 'staffId'] },
+    where : {
+      id      : req.params.oid,
+      staffId : req.user.id
+    },
+    include : [{
+      model : Beverage
+    }, {
+      model : User,
+      as    : 'client'
+    }]
+  })
+
+  if (order == null) {
+    res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+
+  if (order.status != 'in_transit') {
+    res.err(res.errors.ORDER_ALREADY_OFF_IN_TRANSIT, 409)
+    return
+  }
+
+  yield Device.push.message(order, req.body.message)
+
+  res.spit(order)
 })
 
 /**

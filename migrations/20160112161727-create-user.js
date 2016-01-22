@@ -29,6 +29,9 @@ module.exports = {
           allowNull : false,
           defaultValue : 'client'
         },
+        telephone : {
+          type : Sequelize.STRING
+        },
         latitude : {
           type : Sequelize.DOUBLE
         },

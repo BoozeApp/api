@@ -18,6 +18,7 @@ var User = sequelize.define('user', {
   facebookId : { type : Sequelize.STRING },
   picture    : { type : Sequelize.STRING },
   level      : { type : Sequelize.ENUM('client', 'staff', 'admin') },
+  telephone  : { type : Sequelize.STRING },
   latitude   : { type : Sequelize.DOUBLE },
   longitude  : { type : Sequelize.DOUBLE }
 })
@@ -95,6 +96,9 @@ User.staffUp = g(function* (req, res, next) {
 
 })
 
+/**
+ * Associates admin verification
+ */
 User.isAdmin = g(function* (req, res, next) {
   
   if (!req.user || req.user.level != 'admin') {

@@ -25,6 +25,9 @@ exports = module.exports = (router) => {
   router.route(root + '/me')
     .get(User.authenticator, me)
 
+  router.route(root + '/me')
+    .post(User.authenticator, edit)
+
   router.route(root + '/auth')
     .post(auth)
 }
@@ -118,4 +121,20 @@ var auth = g(function* (req, res, next) {
 
     res.spit(user)
   }
+})
+
+/**
+ * Updates the current user
+ * @post telephone The user's telephone number
+ */
+var edit = g(function* (req, res, next) {
+  if (!req.body.telephone) {
+    res.err(res.errors.MISSING_PARAMS, 400)
+    return
+  }
+
+  req.user.telephone = req.body.telephone
+  yield req.user.save()
+
+  res.spit(req.user)
 })

@@ -94,6 +94,30 @@ Device.push = {
     }
 
     yield Device.push.send(message, tokens)
+  },
+
+  message : function *(order, message) {
+    var message = new gcm.Message()
+
+    message.addData({
+      orderId : order.id,
+      code    : "order-message",
+      message : message
+    })
+
+    var _tokens = yield Device.findAll({
+      where : {
+        userId : order.client.id
+      }
+    })
+
+    var tokens = []
+
+    for (var i in _tokens) {
+      tokens.push(_tokens[i].token)
+    }
+
+    yield Device.push.send(message, tokens)
   }
 }
 
