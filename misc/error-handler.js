@@ -24,6 +24,9 @@ var errors = {
   '117' : 'Order is already off placed status',
   '118' : 'Order is already off in_transit status',
   '119' : 'Order is already off fulfilled status',
+  '120' : 'User not found',
+  '121' : 'Password is incorrect',
+  '122' : 'Email address already exists',
 
   /**
    * Helpers
@@ -47,7 +50,10 @@ var errors = {
   ORDER_ALREADY_OFF_DRAFT : 116,
   ORDER_ALREADY_OFF_PLACED : 117,
   ORDER_ALREADY_OFF_IN_TRANSIT : 118,
-  ORDER_ALREADY_OFF_FULFILLED : 119
+  ORDER_ALREADY_OFF_FULFILLED : 119,
+  USER_NOT_FOUND : 120,
+  PASSWORD_INCORRECT : 121,
+  EMAIL_ALREADY_EXISTS : 122
 }
 
 /**

@@ -15,6 +15,7 @@ var User = sequelize.define('user', {
   },
   name       : { type : Sequelize.STRING },
   email      : { type : Sequelize.STRING },
+  password   : { type : Sequelize.STRING },
   facebookId : { type : Sequelize.STRING },
   picture    : { type : Sequelize.STRING },
   level      : { type : Sequelize.ENUM('client', 'staff', 'admin') },
@@ -45,7 +46,7 @@ UserToken.belongsTo(User)
  * The user attributes
  */
 User.attr = {
-  /* all */
+  exclude : ['password']
 }
 
 /**
@@ -67,7 +68,10 @@ User.authenticator = g(function* (req, res, next) {
 
   var userToken = yield UserToken.findOne({
     attributes : User.Token.attr,
-    include    : [ User ],
+    include    : [{
+      model      : User,
+      attributes : User.attr
+    }],
     where : {
       accessToken : accessToken
     }

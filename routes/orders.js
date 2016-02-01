@@ -46,7 +46,7 @@ exports = module.exports = (router) => {
     .get(User.authenticator, get)
 
   router.route(root + '/:oid/message')
-    .post(User.authenticator, User.staffUp, message)
+    .post(User.authenticator, message)
 
   router.route(root + '/:oid/place')
     .put(User.authenticator, place)
@@ -363,16 +363,11 @@ var message = g(function* (req, res, next) {
   }
 
   let order = yield Order.findOne({
-    attributes : { exclude : ['clientId', 'staffId'] },
     where : {
-      id      : req.params.oid,
-      staffId : req.user.id
+      id : req.params.oid
     },
     include : [{
       model : Beverage
-    }, {
-      model : User,
-      as    : 'client'
     }]
   })
 
@@ -381,12 +376,36 @@ var message = g(function* (req, res, next) {
     return
   }
 
+  let destination = ''
+
+  if (order.clientId == req.user.id) {
+    destination = 'staff'
+  } else if (order.staffId == req.user.id) {
+    destination = 'client'
+  } else {
+    res.err(res.errors.ORDER_NOT_FOUND, 404)
+    return
+  }
+
+  order = yield Order.findOne({
+    attributes : { exclude : ['clientId', 'staffId'] },
+    where : {
+      id : req.params.oid
+    },
+    include : [{
+      model : Beverage
+    }, {
+      model : User,
+      as    : destination
+    }]
+  })
+
   if (order.status != 'in_transit') {
     res.err(res.errors.ORDER_ALREADY_OFF_IN_TRANSIT, 409)
     return
   }
 
-  yield Device.push.message(order, req.body.message)
+  yield Device.push.message(order, destination, req.body.message)
 
   res.spit(order)
 })

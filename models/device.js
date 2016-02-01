@@ -96,18 +96,20 @@ Device.push = {
     yield Device.push.send(message, tokens)
   },
 
-  message : function *(order, message) {
+  message : function *(order, destination, text) {
     var message = new gcm.Message()
 
     message.addData({
       orderId : order.id,
       code    : "order-message",
-      message : message
+      message : text
     })
+
+    var userId = destination == 'client' ? order.client.id : order.staff.id
 
     var _tokens = yield Device.findAll({
       where : {
-        userId : order.client.id
+        userId : userId
       }
     })
 
