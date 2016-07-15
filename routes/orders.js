@@ -16,6 +16,7 @@ var User = require('../models/user')
 var Beverage = require('../models/beverage')
 var Order = require('../models/order')
 var Device = require('../models/device')
+var Message = require('../models/Message')
 
 /**
  * Generates the order route
@@ -44,6 +45,9 @@ exports = module.exports = (router) => {
 
   router.route(root + '/:oid')
     .get(User.authenticator, get)
+
+  router.route(root + '/:oid/message')
+    .get(User.authenticator, messages)
 
   router.route(root + '/:oid/message')
     .post(User.authenticator, message)
@@ -353,6 +357,29 @@ var rejected = g(function* (req, res, next) {
 })
 
 /**
+ * Retrieves a historic of messages
+ */
+var messages = g(function* (req, res, next) {
+  let messages = yield Message.findAll({
+    attributes : { exclude : ['senderId', 'receiverId', 'orderId'] },
+    where     : {
+      orderId : req.params.oid
+    },
+    include : [{
+      model : Order
+    }, {
+      model : User,
+      as    : 'sender'
+    }, {
+      model : User,
+      as    : 'receiver'
+    }]
+  })
+
+  res.spit(messages)
+})
+
+/**
  * Send a message
  * @post message The message
  */
@@ -405,6 +432,14 @@ var message = g(function* (req, res, next) {
     return
   }
 
+  var message = {
+    text     : req.body.message,
+    sender   : req.user.id,
+    receiver : destination == 'staff' ? order.staffId : order.clientId,
+    order    : order.id
+  }
+  
+  yield Message.create(message)
   yield Device.push.message(order, destination, req.body.message)
 
   res.spit(order)

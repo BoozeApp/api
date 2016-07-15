@@ -8,6 +8,7 @@ var g = require('co-express')
 
 var User = require('./user')
   , Order = require('./order')
+  , Message = require('./message')
 
 /**
   * The device model
