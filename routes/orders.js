@@ -435,7 +435,7 @@ var message = g(function* (req, res, next) {
   var message = {
     text       : req.body.message,
     senderId   : req.user.id,
-    receiverId : destination == 'staff' ? order.staffId : order.clientId,
+    receiverId : destination == 'staff' ? order.staff.id : order.client.id,
     orderId    : order.id
   }
   
