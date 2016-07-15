@@ -16,7 +16,7 @@ var User = require('../models/user')
 var Beverage = require('../models/beverage')
 var Order = require('../models/order')
 var Device = require('../models/device')
-var Message = require('../models/Message')
+var Message = require('../models/message')
 
 /**
  * Generates the order route
