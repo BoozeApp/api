@@ -433,10 +433,10 @@ var message = g(function* (req, res, next) {
   }
 
   var message = {
-    text     : req.body.message,
-    sender   : req.user.id,
-    receiver : destination == 'staff' ? order.staffId : order.clientId,
-    order    : order.id
+    text       : req.body.message,
+    senderId   : req.user.id,
+    receiverId : destination == 'staff' ? order.staffId : order.clientId,
+    orderId    : order.id
   }
   
   yield Message.create(message)
